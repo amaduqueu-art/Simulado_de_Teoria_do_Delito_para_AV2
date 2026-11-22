@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado - Teoria do Delito</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --bg: #f4f6f7;
+            --text: #2c3e50;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: var(--primary);
+        }
+        .question-card {
+            background: #fdfdfd;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+        .question-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        label {
+            cursor: pointer;
+            display: flex;
+            align-items: baseline;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        label:hover {
+            background: #eef2f5;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: var(--secondary);
+        }
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .btn-download {
+            background: var(--success);
+            margin-top: 20px;
+        }
+        .btn-download:hover {
+            background: #219653;
+        }
+        .results-section {
+            display: none;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+        .commentary {
+            background: #e8f8f5;
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            display: none;
+        }
+        .correct-answer {
+            color: var(--success);
+            font-weight: bold;
+        }
+        .wrong-answer {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .status-bar {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Simulado de Direito Penal</h1>
+    <h2>Teoria do Delito, Ilicitude e Culpabilidade</h2>
+    
+    <div id="quiz-container">
+        <!-- As questões serão renderizadas aqui -->
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <button class="btn" id="submit-btn" onclick="submitQuiz()">Finalizar e Ver Resultados</button>
+    </div>
+
+    <div class="results-section" id="results-section">
+        <h2 id="score-display"></h2>
+        <div style="text-align: center;">
+            <button class="btn btn-download" id="download-btn" onclick="downloadResults()">
+                Baixar Gabarito Comentado (Restam <span id="attempts-count">3</span> tentativas)
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            q: "Segundo a doutrina majoritária brasileira influenciada pelo Finalismo de Hans Welzel, qual é o conceito analítico de crime (Teoria Tripartida)?",
+            options: [
+                "Fato típico, antijurídico e punível.",
+                "Fato típico, antijurídico e culpável.",
+                "Fato típico e culpável, sendo a ilicitude mero indício.",
+                "Fato típico e antijurídico, sendo a culpabilidade pressuposto da pena."
+            ],
+            answer: 1,
+            comment: "Para a doutrina amplamente majoritária (Cezar Bitencourt, Cleber Masson, Nucci), o crime analiticamente é um fato típico, ilícito (antijurídico) e culpável."
+        },
+        {
+            q: "Qual instituto jurídico ocorre quando o agente interrompe a execução do crime por vontade própria, respondendo apenas pelos atos já praticados (Fórmula de Frank: 'Posso prosseguir, mas não quero')?",
+            options: [
+                "Tentativa",
+                "Arrependimento Posterior",
+                "Desistência Voluntária",
+                "Crime Impossível"
+            ],
+            answer: 2,
+            comment: "A desistência voluntária (Art. 15, CP) ocorre durante o processo executório quando o agente decide parar por vontade própria, respondendo só pelos atos praticados."
+        },
+        {
+            q: "Sobre a 'Ponte de Ouro' no Direito Penal, assinale a alternativa correta:",
+            options: [
+                "É sinônimo de crime impossível, cunhado por Hans Welzel.",
+                "Refere-se ao arrependimento posterior nos crimes sem violência.",
+                "É um termo cunhado por Franz von Liszt para descrever o incentivo político-criminal dado ao agente que desiste ou se arrepende (Art. 15).",
+                "Garante isenção de pena para o agente que comete erro de proibição inevitável."
+            ],
+            answer: 2,
+            comment: "O termo 'Ponte de Ouro', cunhado por Franz von Liszt, é a via de volta à legalidade oferecida ao criminoso que se detém voluntariamente (desistência ou arrependimento eficaz)."
+        },
+        {
+            q: "João atira em um cadáver acreditando ser uma pessoa viva. Esse caso configura:",
+            options: [
+                "Arrependimento eficaz",
+                "Crime impossível por ineficácia absoluta do meio",
+                "Crime impossível por impropriedade absoluta do objeto",
+                "Tentativa de homicídio"
+            ],
+            answer: 2,
+            comment: "Atirar em um cadáver é um exemplo clássico de crime impossível (Art. 17) por impropriedade absoluta do objeto material sobre o qual a conduta recai."
+        },
+        {
+            q: "Segundo a Súmula 567 do STJ, a presença de sistemas de vigilância e monitoramento eletrônico em um estabelecimento comercial:",
+            options: [
+                "Torna o furto um crime impossível por ineficácia absoluta do meio.",
+                "Não torna o furto um crime impossível, tratando-se de ineficácia relativa.",
+                "Configura desistência voluntária se o agente fugir ao ver a câmera.",
+                "Isenta o réu de culpabilidade."
+            ],
+            answer: 1,
+            comment: "Súmula 567 do STJ: 'Sistemas de vigilância e monitoramento eletrônico não tornam o crime impossível'. É ineficácia relativa, punindo-se a tentativa."
+        },
+        {
+            q: "Na evolução da Antijuridicidade, a Teoria da Indiciariedade (Ratio Cognoscendi) foi formulada por Max Ernst Mayer e sustenta que:",
+            options: [
+                "O fato típico é um indício da ilicitude, presumindo-se esta salvo causa de justificação.",
+                "A ilicitude é a essência do dolo e da culpa.",
+                "A tipicidade absorve a ilicitude por completo.",
+                "A culpabilidade é indício de que houve antijuridicidade material."
+            ],
+            answer: 0,
+            comment: "A teoria de Mayer aponta que a tipicidade é a ratio cognoscendi (razão de conhecer, o indício) da ilicitude."
+        },
+        {
+            q: "Em caso de naufrágio, 'A' e 'B' disputam uma tábua que suporta apenas um. 'A' empurra 'B', que morre afogado. No Direito Brasileiro (Teoria Unitária), 'A' agiu amparado por:",
+            options: [
+                "Legítima defesa, pois sofria agressão injusta de 'B'.",
+                "Estado de necessidade justificante, que exclui a ilicitude.",
+                "Exercício regular de direito.",
+                "Estrito cumprimento de dever legal."
+            ],
+            answer: 1,
+            comment: "Aplica-se o Estado de Necessidade (Art. 24, CP). O Brasil adotou a Teoria Unitária, onde o sacrifício de bem de igual valor (vida por vida) também exclui a ilicitude."
+        },
+        {
+            q: "Para a configuração da Legítima Defesa (Art. 25, CP), a agressão a ser repelida deve ser:",
+            options: [
+                "Apenas atual e dirigida a direito próprio.",
+                "Injusta, atual ou iminente, a direito próprio ou alheio.",
+                "Justa ou injusta, desde que haja moderação.",
+                "Necessariamente tipificada como crime doloso."
+            ],
+            answer: 1,
+            comment: "Art. 25 do CP: 'quem, usando moderadamente dos meios necessários, repele injusta agressão, atual ou iminente, a direito seu ou de outrem'."
+        },
+        {
+            q: "No que tange às Causas de Justificação (Excludentes de Ilicitude), o uso de 'ofendículos' (como cercas elétricas) previamente instalados e visíveis é majoritariamente considerado pela doutrina como:",
+            options: [
+                "Estado de necessidade permanente.",
+                "Exercício regular de direito (no momento da instalação).",
+                "Estrito cumprimento de dever legal.",
+                "Crime impossível."
+            ],
+            answer: 1,
+            comment: "Para a doutrina (ex: Nucci), instalar ofendículos é exercício regular de direito; quando acionados, convertem-se em legítima defesa preordenada."
+        },
+        {
+            q: "De acordo com o Art. 23, parágrafo único, do CP, o agente que agir acobertado por uma excludente de ilicitude responderá:",
+            options: [
+                "Pelo excesso apenas se for doloso.",
+                "Pelo excesso apenas se for culposo.",
+                "Pelo excesso doloso ou culposo.",
+                "Não responderá, pois a excludente é absoluta."
+            ],
+            answer: 2,
+            comment: "As causas de justificação não são um 'cheque em branco'. O agente responde pelo excesso tanto na modalidade dolosa quanto culposa."
+        },
+        {
+            q: "O Finalismo de Hans Welzel revolucionou a Culpabilidade porque:",
+            options: [
+                "Esvaziou a culpabilidade de elementos normativos.",
+                "Transferiu o dolo e a culpa para o Fato Típico, tornando a culpabilidade puramente normativa.",
+                "Criou a excludente de coação física irresistível.",
+                "Juntou a tipicidade e a ilicitude num único conceito material."
+            ],
+            answer: 1,
+            comment: "Welzel criou a Teoria Normativa Pura. O Dolo e a Culpa saíram da Culpabilidade e foram para a conduta (Fato Típico). A Culpabilidade virou puro juízo de censura."
+        },
+        {
+            q: "Qual das alternativas abaixo NÃO é elemento da Culpabilidade no sistema adotado pelo Código Penal vigente?",
+            options: [
+                "Imputabilidade",
+                "Dolo e Culpa",
+                "Potencial Consciência da Ilicitude",
+                "Exigibilidade de Conduta Diversa"
+            ],
+            answer: 1,
+            comment: "Dolo e Culpa integram a conduta (Fato Típico) segundo a teoria finalista. Os elementos da culpabilidade são: imputabilidade, potencial consciência da ilicitude e exigibilidade de conduta diversa."
+        },
+        {
+            q: "Quanto à imputabilidade penal, o ordenamento jurídico brasileiro adotou, em regra para as doenças mentais, qual critério?",
+            options: [
+                "Critério puramente biológico.",
+                "Critério puramente psicológico.",
+                "Critério biopsicológico.",
+                "Critério psiquiátrico-legal."
+            ],
+            answer: 2,
+            comment: "O Brasil adota o critério biopsicológico (Art. 26). Não basta ter a doença (biológico), a doença deve retirar a capacidade de entender/querer no momento do fato (psicológico)."
+        },
+        {
+            q: "A embriaguez voluntária ou culposa afasta a imputabilidade penal?",
+            options: [
+                "Sim, se o agente ficar inteiramente incapaz no momento do crime.",
+                "Sim, pela teoria da actio libera in causa.",
+                "Não, a embriaguez voluntária não afasta a imputabilidade, adotando-se a teoria da actio libera in causa.",
+                "Apenas nos casos de crimes de trânsito."
+            ],
+            answer: 2,
+            comment: "A embriaguez voluntária ou culposa NÃO exclui a imputabilidade. A lei adota a teoria da Actio Libera in Causa (ação livre na causa). Apenas a embriaguez acidental completa isenta de pena."
+        },
+        {
+            q: "Sobre o Erro de Proibição (Art. 21, CP), é correto afirmar:",
+            options: [
+                "O erro escusável (inevitável) apenas diminui a pena.",
+                "O erro inescusável (evitável) exclui a culpabilidade.",
+                "O erro inescusável (inevitável) exclui o fato típico.",
+                "O erro escusável (inevitável) isenta o agente de pena, pois exclui a culpabilidade."
+            ],
+            answer: 3,
+            comment: "O Erro de Proibição inevitável (escusável) isenta de pena (exclui a culpabilidade). Se for evitável (inescusável), apenas diminui a pena de um sexto a um terço."
+        },
+        {
+            q: "Um gerente de banco subtrai valores da agência pois criminosos mantêm sua família sob a mira de armas em sua casa. Este é um caso de:",
+            options: [
+                "Estado de necessidade exculpante.",
+                "Coação moral irresistível, que afasta a exigibilidade de conduta diversa.",
+                "Obediência hierárquica, que afasta a ilicitude.",
+                "Coação física irresistível, que afasta a conduta."
+            ],
+            answer: 1,
+            comment: "A grave ameaça caracteriza coação moral irresistível (vis compulsiva). Ela atua sobre a vontade, excluindo a exigibilidade de conduta diversa (Culpabilidade). O coator responde pelo crime."
+        },
+        {
+            q: "O Arrependimento Eficaz diferencia-se da Desistência Voluntária porque:",
+            options: [
+                "Na desistência, o crime se consuma.",
+                "O arrependimento eficaz ocorre antes do início da execução.",
+                "O arrependimento eficaz pressupõe que o agente já encerrou os atos executórios e age para evitar o resultado.",
+                "A desistência voluntária exige reparação de dano."
+            ],
+            answer: 2,
+            comment: "No arrependimento eficaz, o agente esgota a execução (já fez tudo) mas realiza nova ação positiva para impedir a consumação. Na desistência, ele para antes de esgotar a execução."
+        },
+        {
+            q: "Policiais arrombam uma residência para cumprir mandado judicial de prisão. Eles estão acobertados por:",
+            options: [
+                "Estado de Necessidade",
+                "Legítima Defesa",
+                "Exercício Regular de Direito",
+                "Estrito Cumprimento do Dever Legal"
+            ],
+            answer: 3,
+            comment: "O policial cumpre um dever cogente imposto pelo Estado. Ao causar dano para o cumprimento regular do mandado, atua no estrito cumprimento do dever legal."
+        },
+        {
+            q: "Um lutador de MMA fratura o braço do oponente durante uma luta regulamentada. O fato típico não constitui crime porque a ilicitude é afastada por:",
+            options: [
+                "Exercício Regular de Direito",
+                "Legítima Defesa",
+                "Obediência Hierárquica",
+                "Estrito Cumprimento do Dever Legal"
+            ],
+            answer: 0,
+            comment: "A prática esportiva regulamentada configura Exercício Regular de Direito, desde que respeitadas estritamente as regras da modalidade."
+        },
+        {
+            q: "O requisito de 'ordem não manifestamente ilegal' emanada de autoridade pública superior refere-se a qual causa de exclusão da culpabilidade?",
+            options: [
+                "Coação moral irresistível",
+                "Obediência Hierárquica",
+                "Erro de Tipo permissivo",
+                "Erro de Proibição inescusável"
+            ],
+            answer: 1,
+            comment: "A Obediência Hierárquica (Art. 22 do CP) exclui a culpabilidade (exigibilidade de conduta diversa) do subordinado público que obedece à ordem não manifestamente ilegal."
+        }
+    ];
+
+    const quizContainer = document.getElementById('quiz-container');
+    let attempts = 3;
+
+    function renderQuiz() {
+        let html = '';
+        questions.forEach((q, index) => {
+            html += `
+                <div class="question-card">
+                    <div class="question-title">${index + 1}. ${q.q}</div>
+                    <ul class="options">
+                        ${q.options.map((opt, i) => `
+                            <li>
+                                <label>
+                                    <input type="radio" name="q${index}" value="${i}">
+                                    <span>${opt}</span>
+                                </label>
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <div class="commentary" id="comment-q${index}">
+                        <strong>Comentário:</strong> ${q.comment}
+                    </div>
+                </div>
+            `;
+        });
+        quizContainer.innerHTML = html;
+    }
+
+    function submitQuiz() {
+        let score = 0;
+        let allAnswered = true;
+
+        questions.forEach((q, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            const commentDiv = document.getElementById(`comment-q${index}`);
+            
+            if (!selected) {
+                allAnswered = false;
+            } else {
+                const selectedValue = parseInt(selected.value);
+                const labels = document.getElementsByName(`q${index}`);
+                
+                labels.forEach((radio) => {
+                    radio.disabled = true; // Trava as opções
+                    const span = radio.nextElementSibling;
+                    if (parseInt(radio.value) === q.answer) {
+                        span.classList.add('correct-answer');
+                    } else if (radio.checked && parseInt(radio.value) !== q.answer) {
+                        span.classList.add('wrong-answer');
+                    }
+                });
+
+                if (selectedValue === q.answer) {
+                    score++;
+                }
+                
+                commentDiv.style.display = 'block';
+            }
+        });
+
+        if (!allAnswered) {
+            alert("Por favor, responda a todas as questões antes de finalizar.");
+            return;
+        }
+
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('results-section').style.display = 'block';
+        document.getElementById('score-display').innerText = `Você acertou ${score} de 20 questões!`;
+    }
+
+    function downloadResults() {
+        if (attempts <= 0) {
+            alert("Você atingiu o limite de 3 downloads permitidos.");
+            return;
+        }
+
+        let fileContent = "GABARITO COMENTADO - SIMULADO DE DIREITO PENAL\n\n";
+        
+        questions.forEach((q, index) => {
+            const correctAnswerText = q.options[q.answer];
+            fileContent += `Questão ${index + 1}: ${q.q}\n`;
+            fileContent += `Resposta Correta: ${correctAnswerText}\n`;
+            fileContent += `Comentário: ${q.comment}\n`;
+            fileContent += `------------------------------------------------------\n\n`;
+        });
+
+        const blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Gabarito_Comentado_Direito_Penal.txt");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        attempts--;
+        document.getElementById('attempts-count').innerText = attempts;
+        
+        if (attempts === 0) {
+            const btn = document.getElementById('download-btn');
+            btn.disabled = true;
+            btn.innerText = "Limite de Downloads Atingido";
+        }
+    }
+
+    // Initialize Quiz
+    renderQuiz();
+</script>
+
+</body>
+</html>
